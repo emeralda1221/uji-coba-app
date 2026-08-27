@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanya AI</title>
+<style>
+  body {
+    font-family: -apple-system, sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+    background: #f5f5f7;
+  }
+  h1 { font-size: 20px; text-align: center; }
+  #chat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+    min-height: 300px;
+  }
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    max-width: 80%;
+    line-height: 1.4;
+  }
+  .user {
+    background: #007aff;
+    color: white;
+    align-self: flex-end;
+  }
+  .ai {
+    background: #e5e5ea;
+    color: #111;
+    align-self: flex-start;
+  }
+  #input-row {
+    display: flex;
+    gap: 8px;
+  }
+  #question {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+  #send-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #007aff;
+    color: white;
+    font-size: 15px;
+  }
+  #send-btn:disabled { background: #aaa; }
+</style>
+</head>
+<body>
+
+<h1>Tanya AI Kebumian 🌍</h1>
+<div id="chat-box"></div>
+
+<div id="input-row">
+  <input id="question" type="text" placeholder="Tanya soal geologi, geodesi, geografi..." />
+  <button id="send-btn">Kirim</button>
+</div>
+
+<script>
+  const chatBox = document.getElementById('chat-box');
+  const questionInput = document.getElementById('question');
+  const sendBtn = document.getElementById('send-btn');
+
+  // Ganti URL ini kalau backend-mu dihosting di tempat lain
+  const BACKEND_URL = 'http://localhost:3000/api/chat';
+
+  function addBubble(text, sender) {
+    const div = document.createElement('div');
+    div.className = 'bubble ' + sender;
+    div.textContent = text;
+    chatBox.appendChild(div);
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+
+  async function sendQuestion() {
+    const text = questionInput.value.trim();
+    if (!text) return;
+
+    addBubble(text, 'user');
+    questionInput.value = '';
+    sendBtn.disabled = true;
+    addBubble('...', 'ai');
+
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: text })
+      });
+      const data = await res.json();
+
+      // Hapus bubble "..." lalu tampilkan jawaban asli
+      chatBox.lastChild.remove();
+      addBubble(data.answer || 'Maaf, ada error.', 'ai');
+    } catch (err) {
+      chatBox.lastChild.remove();
+      addBubble('Gagal menghubungi server.', 'ai');
+    }
+
+    sendBtn.disabled = false;
+  }
+
+  sendBtn.addEventListener('click', sendQuestion);
+  questionInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendQuestion();
+  });
+</script>
+
+</body>
+</html>
