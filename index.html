@@ -1,169 +1,123 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat tentang ilmu kebumian</title>
-    <style>
-      :root {
-        --ios-blue: #0b84ff;
-        --bubble-grey: #e9e9eb;
-        --bg: #f2f2f7;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        max-width: 420px;
-        margin: 0 auto;
-        padding: 0;
-        background: var(--bg);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      h1 {
-        font-size: 17px;
-        font-weight: 600;
-        text-align: center;
-        background: #fff;
-        margin: 0;
-        padding: 16px 16px 14px;
-        border-bottom: 1px solid #e2e2e6;
-        position: sticky;
-        top: 0;
-      }
-      #chat-box {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin: 0;
-        padding: 16px;
-        min-height: 320px;
-        flex: 1;
-      }
-      .bubble {
-        padding: 10px 14px;
-        border-radius: 20px;
-        max-width: 78%;
-        line-height: 1.4;
-        font-size: 15.5px;
-        word-wrap: break-word;
-      }
-      .user {
-        background: var(--ios-blue);
-        color: white;
-        align-self: flex-end;
-        border-bottom-right-radius: 5px;
-      }
-      .ai {
-        background: var(--bubble-grey);
-        color: #111;
-        align-self: flex-start;
-        border-bottom-left-radius: 5px;
-      }
-      #input-row {
-        display: flex;
-        gap: 8px;
-        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 10px));
-        background: #f6f6f8;
-        border-top: 1px solid #e2e2e6;
-        position: sticky;
-        bottom: 0;
-      }
-      #question {
-        flex: 1;
-        padding: 10px 16px;
-        border-radius: 20px;
-        border: 1px solid #d1d1d6;
-        background: #fff;
-        font-size: 15.5px;
-        outline: none;
-      }
-      #question:focus {
-        border-color: var(--ios-blue);
-      }
-      #send-btn {
-        padding: 10px 18px;
-        border: none;
-        border-radius: 20px;
-        background: var(--ios-blue);
-        color: white;
-        font-size: 15px;
-        font-weight: 500;
-        cursor: pointer;
-      }
-      #send-btn:hover:not(:disabled) {
-        opacity: 0.9;
-      }
-      #send-btn:disabled {
-        background: #c7c7cc;
-        cursor: not-allowed;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Tanya Kebumian 🌍</h1>
-    <div id="chat-box"></div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanya AI</title>
+<style>
+  body {
+    font-family: -apple-system, sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+    background: #f5f5f7;
+  }
+  h1 { font-size: 20px; text-align: center; }
+  #chat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+    min-height: 300px;
+  }
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    max-width: 80%;
+    line-height: 1.4;
+  }
+  .user {
+    background: #007aff;
+    color: white;
+    align-self: flex-end;
+  }
+  .ai {
+    background: #e5e5ea;
+    color: #111;
+    align-self: flex-start;
+  }
+  #input-row {
+    display: flex;
+    gap: 8px;
+  }
+  #question {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+  #send-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #007aff;
+    color: white;
+    font-size: 15px;
+  }
+  #send-btn:disabled { background: #aaa; }
+</style>
+</head>
+<body>
 
-    <div id="input-row">
-      <input
-        id="question"
-        type="text"
-        placeholder="Tanya soal geologi, geodesi, geografi..."
-      />
-      <button id="send-btn">Kirim</button>
-    </div>
+<h1>Tanya AI Kebumian 🌍</h1>
+<div id="chat-box"></div>
 
-    <script>
-      const chatBox = document.getElementById("chat-box");
-      const questionInput = document.getElementById("question");
-      const sendBtn = document.getElementById("send-btn");
+<div id="input-row">
+  <input id="question" type="text" placeholder="Tanya soal geologi, geodesi, geografi..." />
+  <button id="send-btn">Kirim</button>
+</div>
 
-      // Ganti URL ini kalau backend-mu dihosting di tempat lain
-      const BACKEND_URL = "http://localhost:3000/api/chat";
+<script>
+  const chatBox = document.getElementById('chat-box');
+  const questionInput = document.getElementById('question');
+  const sendBtn = document.getElementById('send-btn');
 
-      function addBubble(text, sender) {
-        const div = document.createElement("div");
-        div.className = "bubble " + sender;
-        div.textContent = text;
-        chatBox.appendChild(div);
-        window.scrollTo(0, document.body.scrollHeight);
-      }
+  // Ganti URL ini kalau backend-mu dihosting di tempat lain
+  const BACKEND_URL = 'http://localhost:3000/api/chat';
 
-      async function sendQuestion() {
-        const text = questionInput.value.trim();
-        if (!text) return;
+  function addBubble(text, sender) {
+    const div = document.createElement('div');
+    div.className = 'bubble ' + sender;
+    div.textContent = text;
+    chatBox.appendChild(div);
+    window.scrollTo(0, document.body.scrollHeight);
+  }
 
-        addBubble(text, "user");
-        questionInput.value = "";
-        sendBtn.disabled = true;
-        addBubble("...", "ai");
+  async function sendQuestion() {
+    const text = questionInput.value.trim();
+    if (!text) return;
 
-        try {
-          const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question: text }),
-          });
-          const data = await res.json();
+    addBubble(text, 'user');
+    questionInput.value = '';
+    sendBtn.disabled = true;
+    addBubble('...', 'ai');
 
-          // Hapus bubble "..." lalu tampilkan jawaban asli
-          chatBox.lastChild.remove();
-          addBubble(data.answer || "Maaf, ada error.", "ai");
-        } catch (err) {
-          chatBox.lastChild.remove();
-          addBubble("Gagal menghubungi server.", "ai");
-        }
-
-        sendBtn.disabled = false;
-      }
-
-      sendBtn.addEventListener("click", sendQuestion);
-      questionInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") sendQuestion();
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: text })
       });
-    </script>
-  </body>
+      const data = await res.json();
+
+      // Hapus bubble "..." lalu tampilkan jawaban asli
+      chatBox.lastChild.remove();
+      addBubble(data.answer || 'Maaf, ada error.', 'ai');
+    } catch (err) {
+      chatBox.lastChild.remove();
+      addBubble('Gagal menghubungi server.', 'ai');
+    }
+
+    sendBtn.disabled = false;
+  }
+
+  sendBtn.addEventListener('click', sendQuestion);
+  questionInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendQuestion();
+  });
+</script>
+
+</body>
 </html>
+
